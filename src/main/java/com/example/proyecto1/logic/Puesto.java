@@ -1,5 +1,6 @@
 package com.example.proyecto1.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class Puesto {
     }
     public Puesto() {}
 
+
     @OneToMany(mappedBy = "idPuesto", fetch = FetchType.LAZY)
     private List<PuestoCaracteristica> caracteristicas = new ArrayList<>();
 
@@ -34,6 +36,7 @@ public class Puesto {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_empresa")
     private Empresa idEmpresa;

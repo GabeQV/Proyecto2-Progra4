@@ -1,5 +1,6 @@
 package com.example.proyecto1.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class Empresa {
     @Column(name = "id", nullable = false, length = 20)
     private String id;
 
+    @JsonIgnore
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "id", nullable = false)

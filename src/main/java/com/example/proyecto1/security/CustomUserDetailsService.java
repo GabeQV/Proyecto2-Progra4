@@ -23,9 +23,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByCorreo(correo)
-                .orElseThrow(() -> new UsernameNotFoundException("No se encontró el usuario con correo: " + correo));
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        
+        Usuario usuario = usuarioRepository.findByCorreo(identifier)
+                .orElseGet(() -> usuarioRepository.findById(identifier)
+                        .orElseThrow(() -> new UsernameNotFoundException(
+                                "No se encontró el usuario: " + identifier)));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getRolUsuario()));
