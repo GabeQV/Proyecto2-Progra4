@@ -42,7 +42,7 @@ public class Service {
     }
 
     public List<Puesto> getTop5PuestosPublicos() {
-        return puestoRepository.findTop5ByActivoTrueOrderByFechaRegistroDesc();
+        return puestoRepository.findTop5ByActivoTrueAndEsPublicoTrueOrderByFechaRegistroDesc();
     }
 
     public Optional<Usuario> buscarUsuarioPorId(String id) {
@@ -55,6 +55,9 @@ public class Service {
                                   String nacionalidad, String telefono, String residencia) {
         if (usuarioRepo.existsById(id)) {
             throw new IllegalArgumentException("Ya existe un usuario con esa identificación.");
+        }
+        if (usuarioRepo.findByCorreo(correo).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un usuario registrado con ese correo electrónico.");
         }
         if (id == null || !id.matches("^[a-zA-Z0-9]+$")) {
             throw new IllegalArgumentException("La identificación solo puede contener letras y números, sin espacios.");
@@ -104,6 +107,7 @@ public class Service {
                 .orElseThrow(() -> new IllegalArgumentException("Oferente no encontrado."));
     }
 
+    @Transactional(readOnly = true)
     public List<Oferente> obtenerOferentesPendientes() {
         return oferenteRepo.findByAprobadoFalse();
     }
@@ -186,6 +190,9 @@ public class Service {
         if (usuarioRepo.existsById(id)) {
             throw new IllegalArgumentException("Ya existe un usuario con esa identificación.");
         }
+        if (usuarioRepo.findByCorreo(correo).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un usuario registrado con ese correo electrónico.");
+        }
         Usuario usuario = new Usuario();
         usuario.setId(id);
         usuario.setCorreo(correo);
@@ -218,6 +225,7 @@ public class Service {
                 .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
     }
 
+    @Transactional(readOnly = true)
     public List<Empresa> obtenerEmpresasPendientes() {
         return empresaRepo.findByAprobadoFalse();
     }
@@ -262,7 +270,7 @@ public class Service {
     }
 
     @Transactional
-    public Puesto crearPuesto(String idEmpresa, String descripcion, Double salario, String tipoPuesto, String moneda) {
+    public Puesto crearPuesto(String idEmpresa, String descripcion, Double salario, String tipoPuesto, String moneda, Boolean esPublico) {
         if (descripcion == null || descripcion.trim().isEmpty()) {
             throw new IllegalArgumentException("La descripción no puede estar vacía.");
         }
@@ -281,6 +289,7 @@ public class Service {
         puesto.setMoneda(moneda);
         puesto.setActivo(true);
         puesto.setFechaRegistro(LocalDate.now());
+        puesto.setEsPublico(esPublico != null ? esPublico : true);
 
         return puestoRepository.save(puesto);
     }
@@ -334,15 +343,15 @@ public class Service {
     }
 
     @Transactional
-    public void addCaracteristica(Caracteristica nueva) {
-        if (nueva.getIdPadre() != null) {
-            Integer pid = nueva.getIdPadre().getId();
-            if (pid == null || pid == 0) {
-                nueva.setIdPadre(null);
-            } else {
-                Caracteristica padre = caracteristicaRepository.findById(pid).orElse(null);
-                nueva.setIdPadre(padre);
-            }
+    public void addCaracteristica(String nombre, Integer idPadre) {
+        if (nombre == null || nombre.isBlank())
+            throw new IllegalArgumentException("El nombre es obligatorio.");
+        Caracteristica nueva = new Caracteristica();
+        nueva.setNombre(nombre.trim());
+        if (idPadre != null && idPadre != 0) {
+            Caracteristica padre = caracteristicaRepository.findById(idPadre)
+                    .orElseThrow(() -> new IllegalArgumentException("Padre no encontrado."));
+            nueva.setIdPadre(padre);
         }
         caracteristicaRepository.save(nueva);
     }
@@ -396,8 +405,17 @@ public class Service {
                 .orElseThrow(() -> new IllegalArgumentException("Puesto no encontrado."));
     }
 
-    public List<PuestoCaracteristica> getCaracteristicasDePuesto(Integer idPuesto) {
-        return puestoCaracteristicaRepository.findByIdPuesto_Id(idPuesto);
+    @Transactional(readOnly = true)
+    public List<java.util.Map<String, Object>> getCaracteristicasDePuesto(Integer idPuesto) {
+        return puestoCaracteristicaRepository.findByIdPuesto_Id(idPuesto).stream()
+                .map(pc -> {
+                    Caracteristica c = pc.getIdCaracteristica();
+                    java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+                    m.put("nombre", c.getNombre());
+                    m.put("padre", c.getIdPadre() != null ? c.getIdPadre().getNombre() : null);
+                    m.put("nivel", pc.getNivelRequerido() != null ? pc.getNivelRequerido() : 1);
+                    return m;
+                }).toList();
     }
 
     @Transactional
@@ -446,6 +464,8 @@ public class Service {
 
     @Transactional
     public void actualizarCaracteristica(Integer id, String nombre, Integer idPadre) {
+        if (idPadre != null && idPadre.equals(id))
+            throw new IllegalArgumentException("Una característica no puede ser su propio padre.");
         Caracteristica c = caracteristicaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Característica no encontrada."));
         if (nombre != null && !nombre.isBlank()) c.setNombre(nombre);
@@ -455,6 +475,8 @@ public class Service {
 
     @Transactional
     public void eliminarCaracteristica(Integer id) {
+        List<Caracteristica> hijos = caracteristicaRepository.findByIdPadre_Id(id);
+        for (Caracteristica hijo : hijos) eliminarCaracteristica(hijo.getId());
         caracteristicaRepository.deleteById(id);
     }
 

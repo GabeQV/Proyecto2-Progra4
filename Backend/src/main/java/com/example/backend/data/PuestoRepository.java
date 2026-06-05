@@ -13,11 +13,11 @@ public interface PuestoRepository extends CrudRepository<Puesto, Integer> {
 
     List<Puesto> findByIdEmpresa_Id(String idEmpresa);
 
-    List<Puesto> findTop5ByActivoTrueOrderByFechaRegistroDesc();
+    List<Puesto> findTop5ByActivoTrueAndEsPublicoTrueOrderByFechaRegistroDesc();
 
     @Query("SELECT DISTINCT p FROM Puesto p " +
             "JOIN p.caracteristicas req_pc " +
-            "WHERE p.activo = true " +
+            "WHERE p.activo = true AND p.esPublico = true " +
             "AND req_pc.idCaracteristica.id IN :ids")
     List<Puesto> findPuestosPublicosPorCaracteristicas(@Param("ids") List<Integer> ids);
 

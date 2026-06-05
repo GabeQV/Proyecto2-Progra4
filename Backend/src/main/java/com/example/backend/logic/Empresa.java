@@ -32,6 +32,8 @@ public class Empresa {
     @JoinColumn(name = "id", nullable = false)
     private Usuario usuario;
 
+    public String getCorreo() { return usuario != null ? usuario.getCorreo() : null; }
+
     @Size(max = 60)
     @Column(name = "nombre", length = 60)
     private String nombre;

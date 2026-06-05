@@ -4,7 +4,7 @@ import api from '../../api/client'
 
 export default function RegistroOferente() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ correo:'', clave:'', nombre:'', telefono:'', localizacion:'' })
+  const [form, setForm] = useState({ id:'', correo:'', clave:'', nombre:'', primerApellido:'', nacionalidad:'', telefono:'', residencia:'' })
   const [msg, setMsg] = useState(null)
 
   const set = k => e => setForm(p => ({ ...p, [k]: e.target.value }))
@@ -25,12 +25,13 @@ export default function RegistroOferente() {
       <h1 style={{ marginBottom: '1.5rem' }}>Registro de Oferente</h1>
       {msg && <div className={`alert ${msg.ok ? 'alert-success' : 'alert-error'}`}>{msg.text}</div>}
       <form onSubmit={handleSubmit} className="card">
-        {[['correo','Correo'],['clave','Clave'],['nombre','Nombre completo'],
-          ['telefono','Teléfono'],['localizacion','Localización']].map(([k,l]) => (
+        {[['id','Identificación'],['correo','Correo'],['clave','Clave'],['nombre','Nombre'],
+          ['primerApellido','Primer apellido'],['nacionalidad','Nacionalidad'],
+          ['telefono','Teléfono'],['residencia','Lugar de residencia']].map(([k,l]) => (
           <div key={k} className="form-group">
             <label>{l}</label>
             <input type={k==='clave'?'password':k==='correo'?'email':'text'}
-              value={form[k]} onChange={set(k)} required={['correo','clave','nombre'].includes(k)} />
+              value={form[k]} onChange={set(k)} required={['id','correo','clave','nombre','primerApellido','residencia'].includes(k)} />
           </div>
         ))}
         <button className="btn btn-primary" style={{ width: '100%' }}>Registrar</button>

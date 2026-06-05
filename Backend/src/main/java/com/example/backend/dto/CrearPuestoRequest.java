@@ -20,6 +20,8 @@ public class CrearPuestoRequest {
     @NotBlank(message = "La moneda es obligatoria")
     private String moneda;
 
+    private Boolean esPublico = true;
+
     private List<CaracteristicaNivel> caracteristicas;
 
     public static class CaracteristicaNivel {
@@ -42,4 +44,6 @@ public class CrearPuestoRequest {
     public void setMoneda(String moneda) { this.moneda = moneda; }
     public List<CaracteristicaNivel> getCaracteristicas() { return caracteristicas; }
     public void setCaracteristicas(List<CaracteristicaNivel> caracteristicas) { this.caracteristicas = caracteristicas; }
+    public Boolean getEsPublico() { return esPublico; }
+    public void setEsPublico(Boolean esPublico) { this.esPublico = esPublico; }
 }

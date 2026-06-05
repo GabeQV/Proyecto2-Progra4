@@ -37,7 +37,7 @@ public class Puesto {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @JsonIgnoreProperties({"usuario", "aprobado", "telefono", "descripcion", "localizacion"})
+    @JsonIgnoreProperties({"usuario", "aprobado", "telefono", "descripcion", "localizacion", "correo"})
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_empresa")
     private Empresa idEmpresa;
@@ -49,8 +49,8 @@ public class Puesto {
     @Column(name = "salario")
     private Double salario;
 
-    @Size(max = 10)
-    @Column(name = "tipo_puesto", length = 10)
+    @Size(max = 20)
+    @Column(name = "tipo_puesto", length = 20)
     private String tipoPuesto;
 
     @Column(name = "activo")
@@ -62,4 +62,7 @@ public class Puesto {
     @Size(max = 6)
     @Column(name = "moneda", length = 6)
     private String moneda;
+
+    @Column(name = "es_publico")
+    private Boolean esPublico = true;
 }

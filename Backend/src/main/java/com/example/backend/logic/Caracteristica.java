@@ -35,8 +35,9 @@ public class Caracteristica {
     @Column(name = "nombre", nullable = false, length = 60)
     private String nombre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_padre")
+    @com.fasterxml.jackson.annotation.JsonIdentityInfo(generator = com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private Caracteristica idPadre;
 
     @JsonIgnore

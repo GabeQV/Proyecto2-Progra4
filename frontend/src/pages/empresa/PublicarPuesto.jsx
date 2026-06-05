@@ -13,9 +13,9 @@ function CaracteristicaSelector({ nodos, seleccionados, onChange }) {
       if (existe) {
         return nivel === 0
           ? prev.filter(x => x.idCaracteristica !== id)
-          : prev.map(x => x.idCaracteristica === id ? { ...x, nivelRequerido: nivel } : x)
+          : prev.map(x => x.idCaracteristica === id ? { ...x, nivel } : x)
       }
-      return [...prev, { idCaracteristica: id, nivelRequerido: nivel }]
+      return [...prev, { idCaracteristica: id, nivel: nivel }]
     })
   }
 
@@ -29,7 +29,7 @@ function CaracteristicaSelector({ nodos, seleccionados, onChange }) {
             onChange={e => toggleNivel(nodo.id, e.target.checked ? 1 : 0)} />
           <span>{nodo.nombre}</span>
           {sel && (
-            <select value={sel.nivelRequerido}
+            <select value={sel.nivel}
               onChange={e => toggleNivel(nodo.id, Number(e.target.value))}
               style={{ padding: '2px 4px', fontSize: '.85rem' }}>
               {NIVELES.map(n => <option key={n} value={n}>Nivel {n}</option>)}
@@ -47,7 +47,7 @@ function CaracteristicaSelector({ nodos, seleccionados, onChange }) {
 export default function PublicarPuesto() {
   const navigate = useNavigate()
   const [nodos, setNodos] = useState([])
-  const [form, setForm] = useState({ descripcion:'', tipoPuesto:'', salario:'', moneda:'CRC' })
+  const [form, setForm] = useState({ descripcion:'', tipoPuesto:'', salario:'', moneda:'CRC', esPublico: true })
   const [caracteristicas, setCaracteristicas] = useState([])
   const [msg, setMsg] = useState(null)
 
@@ -98,6 +98,13 @@ export default function PublicarPuesto() {
           <div className="form-group">
             <label>Salario</label>
             <input type="number" min="0" value={form.salario} onChange={set('salario')} required />
+          </div>
+          <div className="form-group">
+            <label>Visibilidad</label>
+            <select value={form.esPublico} onChange={e => setForm(p => ({ ...p, esPublico: e.target.value === 'true' }))} required>
+              <option value="true">Pública</option>
+              <option value="false">Privada</option>
+            </select>
           </div>
         </div>
 

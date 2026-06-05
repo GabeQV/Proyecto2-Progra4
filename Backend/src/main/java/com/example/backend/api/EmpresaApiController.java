@@ -41,10 +41,11 @@ public class EmpresaApiController {
                                           @AuthenticationPrincipal UserDetails userDetails) {
         try {
             Puesto puesto = service.crearPuesto(userDetails.getUsername(), request.getDescripcion(),
-                    request.getSalario(), request.getTipoPuesto(), request.getMoneda());
+                    request.getSalario(), request.getTipoPuesto(), request.getMoneda(), request.getEsPublico());
 
             if (request.getCaracteristicas() != null) {
                 for (CrearPuestoRequest.CaracteristicaNivel cn : request.getCaracteristicas()) {
+                    System.out.println(">>> idCaracteristica=" + cn.getIdCaracteristica() + " nivel=" + cn.getNivel());
                     service.agregarCaracteristicaAPuesto(puesto.getId(), cn.getIdCaracteristica(), cn.getNivel());
                 }
             }

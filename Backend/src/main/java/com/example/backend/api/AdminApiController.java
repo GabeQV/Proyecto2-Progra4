@@ -70,14 +70,7 @@ public class AdminApiController {
     @PostMapping("/caracteristicas")
     public ResponseEntity<?> addCaracteristica(@RequestBody CaracteristicaRequest request) {
         try {
-            Caracteristica nueva = new Caracteristica();
-            nueva.setNombre(request.getNombre());
-            if (request.getIdPadre() != null) {
-                Caracteristica padre = new Caracteristica();
-                padre.setId(request.getIdPadre());
-                nueva.setIdPadre(padre);
-            }
-            service.addCaracteristica(nueva);
+            service.addCaracteristica(request.getNombre(), request.getIdPadre());
             return ResponseEntity.ok(Map.of("mensaje", "Característica creada exitosamente"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));

@@ -13,7 +13,7 @@ export default function AdminCaracteristicas() {
 
   const guardar = async e => {
     e.preventDefault()
-    const payload = { nombre: form.nombre, idPadre: form.idPadre ? { id: Number(form.idPadre) } : null }
+    const payload = { nombre: form.nombre, idPadre: form.idPadre ? Number(form.idPadre) : null }
     try {
       if (editando) {
         await api.put(`/admin/caracteristicas/${editando}`, payload)
@@ -40,17 +40,24 @@ export default function AdminCaracteristicas() {
     try { await api.delete(`/admin/caracteristicas/${id}`); cargar() } catch { /* ignorar */ }
   }
 
-  const renderArbol = (parentId = null, depth = 0) =>
-    nodos.filter(n => (n.idPadre?.id ?? null) === parentId).map(n => (
-      <tr key={n.id}>
-        <td style={{ paddingLeft: `${depth * 1.5 + 0.75}rem` }}>{n.nombre}</td>
-        <td>{n.idPadre?.nombre ?? '—'}</td>
-        <td style={{ display: 'flex', gap: '.5rem' }}>
-          <button className="btn btn-secondary" onClick={() => iniciarEdicion(n)}>Editar</button>
-          <button className="btn btn-danger" onClick={() => eliminar(n.id)}>Eliminar</button>
-        </td>
-      </tr>
-    ).concat(renderArbol(n.id, depth + 1)))
+  const renderArbol = (parentId = null, depth = 0) => {
+    const hijos = nodos.filter(n => (n.idPadre?.id ?? null) === parentId)
+    const filas = []
+    for (const n of hijos) {
+      filas.push(
+        <tr key={n.id}>
+          <td style={{ paddingLeft: `${depth * 1.5 + 0.75}rem` }}>{n.nombre}</td>
+          <td>{n.idPadre?.nombre ?? '—'}</td>
+          <td style={{ display: 'flex', gap: '.5rem' }}>
+            <button className="btn btn-secondary" onClick={() => iniciarEdicion(n)}>Editar</button>
+            <button className="btn btn-danger" onClick={() => eliminar(n.id)}>Eliminar</button>
+          </td>
+        </tr>
+      )
+      for (const fila of renderArbol(n.id, depth + 1)) filas.push(fila)
+    }
+    return filas
+  }
 
   return (
     <div className="container">
@@ -66,7 +73,7 @@ export default function AdminCaracteristicas() {
           <label>Padre (opcional)</label>
           <select value={form.idPadre} onChange={e => setForm(p => ({ ...p, idPadre: e.target.value }))}>
             <option value="">— Raíz —</option>
-            {nodos.map(n => <option key={n.id} value={n.id}>{n.nombre}</option>)}
+            {nodos.filter(n => n.id !== editando).map(n => <option key={n.id} value={n.id}>{n.nombre}</option>)}
           </select>
         </div>
         <button className="btn btn-primary">{editando ? 'Actualizar' : 'Agregar'}</button>

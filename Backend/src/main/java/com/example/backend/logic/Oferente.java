@@ -34,6 +34,9 @@ public class Oferente {
     @JoinColumn(name = "id", nullable = false)
     private Usuario usuario;
 
+    public String getCorreo() { return usuario != null ? usuario.getCorreo() : null; }
+    public String getLocalizacion() { return residencia; }
+
     @Size(max = 40)
     @Column(name = "nombre", length = 40)
     private String nombre;
