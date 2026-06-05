@@ -3,12 +3,15 @@ import api from '../../api/client'
 
 const NIVELES = [1, 2, 3, 4, 5]
 
+// Extrae el id de idPadre que puede llegar como objeto {id,...} o número (por @JsonIdentityInfo)
+const extractPadreId = val => {
+  if (val == null) return null
+  if (typeof val === 'object') return val.id ?? null
+  return val
+}
+
 function HabilidadTree({ nodos, habilidades, onChange }) {
-  const getPadreId = n => {
-    if (!n.idPadre) return null
-    return typeof n.idPadre === "object" ? n.idPadre.id : n.idPadre
-  }
-  const raices = nodos.filter(n => !n.idPadre)
+  const raices = nodos.filter(n => extractPadreId(n.idPadre) == null)
 
   const toggleNivel = (id, nivel) => {
     onChange(prev => {
@@ -23,7 +26,8 @@ function HabilidadTree({ nodos, habilidades, onChange }) {
   }
 
   const renderNodo = nodo => {
-    const hijos = nodos.filter(n => getPadreId(n) === nodo.id)
+    const hijos = nodos.filter(n => extractPadreId(n.idPadre) === nodo.id)
+    // habilidades ahora es [{idCaracteristica: number, nombre: string, nivel: number}]
     const hab = habilidades.find(x => x.idCaracteristica === nodo.id)
     return (
       <div key={nodo.id} className="tree-node">
@@ -59,9 +63,10 @@ export default function HabilidadesOferente() {
     ]).then(([cn, hb]) => {
       setNodos(Array.isArray(cn.data) ? cn.data : [])
       const hbData = Array.isArray(hb.data) ? hb.data : []
+      // El backend ahora devuelve DTOs limpios: {idCaracteristica: number, nombre, nivel}
       setHabilidades(hbData.map(h => ({
-        idCaracteristica: h.idCaracteristica?.id ?? h.idCaracteristica,
-        nivel: h.nivel
+        idCaracteristica: h.idCaracteristica,
+        nivel: h.nivel ?? 1
       })))
     }).catch(() => {})
   }, [])
