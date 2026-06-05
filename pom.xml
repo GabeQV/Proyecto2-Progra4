@@ -8,4 +8,9 @@
     <packaging>pom</packaging>
     <name>Proyecto2-root</name>
     <description>Proyecto Bolsa de Empleo - ver carpeta Backend/</description>
+
+    <modules>
+        <module>backend</module>
+    </modules>
+
 </project>
