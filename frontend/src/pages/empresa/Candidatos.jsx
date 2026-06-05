@@ -22,14 +22,22 @@ export default function Candidatos() {
       {!loading && candidatos.length === 0 && <p>No hay candidatos que cumplan los requisitos.</p>}
       <table>
         <thead>
-          <tr><th>Nombre</th><th>Correo</th><th>Localización</th><th>Acciones</th></tr>
+          <tr><th>Nombre</th><th>Correo</th><th>Localización</th><th>Coincidencia</th><th>Acciones</th></tr>
         </thead>
         <tbody>
           {candidatos.map(c => (
             <tr key={c.id}>
-              <td>{c.nombre}</td>
+              <td>{c.nombre} {c.primerApellido}</td>
               <td>{c.correo}</td>
               <td>{c.localizacion}</td>
+              <td>
+                <span style={{
+                  fontWeight: 'bold',
+                  color: c.porcentaje >= 80 ? '#16a34a' : c.porcentaje >= 50 ? '#d97706' : '#dc2626'
+                }}>
+                  {c.porcentaje?.toFixed(0)}% ({c.requistosCumplidos}/{c.requisitosTotal})
+                </span>
+              </td>
               <td>
                 <button className="btn btn-primary"
                   onClick={() => navigate(`/empresa/candidato/${c.id}`)}>

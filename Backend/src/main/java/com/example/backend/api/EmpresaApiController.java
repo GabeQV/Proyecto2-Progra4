@@ -66,7 +66,21 @@ public class EmpresaApiController {
         try {
             return ResponseEntity.ok(
                 service.buscarCandidatos(id).stream()
-                    .map(r -> r.oferente)
+                    .map(r -> {
+                        java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+                        m.put("id", r.oferente.getId());
+                        m.put("nombre", r.oferente.getNombre());
+                        m.put("primerApellido", r.oferente.getPrimerApellido());
+                        m.put("segundoApellido", r.oferente.getSegundoApellido());
+                        m.put("correo", r.oferente.getCorreo());
+                        m.put("localizacion", r.oferente.getLocalizacion());
+                        m.put("telefono", r.oferente.getTelefono());
+                        m.put("cvRuta", r.oferente.getCvRuta());
+                        m.put("requistosCumplidos", r.requistosCumplidos);
+                        m.put("requisitosTotal", r.requisitosTotal);
+                        m.put("porcentaje", r.porcentaje);
+                        return m;
+                    })
                     .toList()
             );
         } catch (Exception e) {

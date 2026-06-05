@@ -4,6 +4,10 @@ import api from '../../api/client'
 const NIVELES = [1, 2, 3, 4, 5]
 
 function HabilidadTree({ nodos, habilidades, onChange }) {
+  const getPadreId = n => {
+    if (!n.idPadre) return null
+    return typeof n.idPadre === "object" ? n.idPadre.id : n.idPadre
+  }
   const raices = nodos.filter(n => !n.idPadre)
 
   const toggleNivel = (id, nivel) => {
@@ -19,7 +23,7 @@ function HabilidadTree({ nodos, habilidades, onChange }) {
   }
 
   const renderNodo = nodo => {
-    const hijos = nodos.filter(n => n.idPadre?.id === nodo.id)
+    const hijos = nodos.filter(n => getPadreId(n) === nodo.id)
     const hab = habilidades.find(x => x.idCaracteristica === nodo.id)
     return (
       <div key={nodo.id} className="tree-node">

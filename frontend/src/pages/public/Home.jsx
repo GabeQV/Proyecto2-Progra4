@@ -14,13 +14,13 @@ function RequisitosArbol({ chars }) {
       {Object.entries(grupos).map(([padre, hijos]) =>
         padre === '__sin_padre__'
           ? hijos.map(h => (
-              <li key={h.nombre}>{h.nombre} ({h.nivel})</li>
+              <li key={h.nombre}>{h.nombre}{h.nivel > 1 ? ` (Nivel ${h.nivel})` : ''}</li>
             ))
           : (
             <li key={padre}>
               <strong>{padre}</strong>
               <ul style={{ paddingLeft: '1rem', margin: '.1rem 0 0' }}>
-                {hijos.map(h => <li key={h.nombre}>{h.nombre} ({h.nivel})</li>)}
+                {hijos.map(h => <li key={h.nombre}>{h.nombre}{h.nivel > 1 ? ` (Nivel ${h.nivel})` : ''}</li>)}
               </ul>
             </li>
           )

@@ -18,7 +18,7 @@ public class OferenteHabilidad {
     private Oferente idOferente;
 
     @MapsId("idCaracteristica")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "id_caracteristica", nullable = false)
     private Caracteristica idCaracteristica;
 
