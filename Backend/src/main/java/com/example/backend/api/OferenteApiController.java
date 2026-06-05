@@ -1,7 +1,6 @@
 package com.example.backend.api;
 
 import com.example.backend.dto.AgregarHabilidadRequest;
-import com.example.backend.logic.Oferente;
 import com.example.backend.logic.Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,9 +35,32 @@ public class OferenteApiController {
         }
     }
 
+    @PutMapping("/perfil")
+    public ResponseEntity<?> actualizarPerfil(@RequestBody Map<String, String> body,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            service.actualizarPerfilOferente(userDetails.getUsername(),
+                    body.get("nombre"), body.get("telefono"), body.get("localizacion"));
+            return ResponseEntity.ok(Map.of("mensaje", "Perfil actualizado"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping("/habilidades")
     public ResponseEntity<?> getMisHabilidades(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(service.obtenerHabilidadesDeOferente(userDetails.getUsername()));
+    }
+
+    @PutMapping("/habilidades")
+    public ResponseEntity<?> actualizarHabilidades(@RequestBody List<AgregarHabilidadRequest> habilidades,
+                                                    @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            service.reemplazarHabilidades(userDetails.getUsername(), habilidades);
+            return ResponseEntity.ok(Map.of("mensaje", "Habilidades actualizadas"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/habilidades")
@@ -53,7 +75,7 @@ public class OferenteApiController {
     }
 
     @PostMapping("/cv")
-    public ResponseEntity<?> subirCV(@RequestParam("archivo") MultipartFile archivo,
+    public ResponseEntity<?> subirCV(@RequestParam("file") MultipartFile archivo,
                                       @AuthenticationPrincipal UserDetails userDetails) {
         try {
             service.guardarCV(userDetails.getUsername(), archivo, uploadDir);
@@ -65,6 +87,15 @@ public class OferenteApiController {
         }
     }
 
+    @GetMapping("/{id}/cv")
+    public ResponseEntity<?> descargarCV(@PathVariable String id) {
+        try {
+            return service.descargarCV(id, uploadDir);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @DeleteMapping("/cv")
     public ResponseEntity<?> eliminarCV(@AuthenticationPrincipal UserDetails userDetails) {
         try {
@@ -73,15 +104,5 @@ public class OferenteApiController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al eliminar el archivo"));
         }
-    }
-
-    @GetMapping("/caracteristicas")
-    public ResponseEntity<?> getCaracteristicas() {
-        return ResponseEntity.ok(service.getAllCaracteristicas());
-    }
-
-    @GetMapping("/puestos/buscar")
-    public ResponseEntity<?> buscarPuestos(@RequestParam(required = false) List<Integer> ids) {
-        return ResponseEntity.ok(service.BuscarPuestos(ids));
     }
 }

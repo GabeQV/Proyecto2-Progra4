@@ -1,6 +1,7 @@
 package com.example.backend.logic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class Puesto {
     }
     public Puesto() {}
 
+    @JsonIgnore
     @OneToMany(mappedBy = "idPuesto", fetch = FetchType.LAZY)
     private List<PuestoCaracteristica> caracteristicas = new ArrayList<>();
 
@@ -35,8 +37,8 @@ public class Puesto {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"usuario", "aprobado", "telefono", "descripcion", "localizacion"})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_empresa")
     private Empresa idEmpresa;
 

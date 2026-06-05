@@ -1,6 +1,7 @@
 package com.example.backend.logic;
 
 import com.example.backend.data.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +42,7 @@ public class Service {
     }
 
     public List<Puesto> getTop5PuestosPublicos() {
-        return puestoRepository.findTop5ByTipoPuestoAndActivoTrueOrderByFechaRegistroDesc("publico");
+        return puestoRepository.findTop5ByActivoTrueOrderByFechaRegistroDesc();
     }
 
     public Optional<Usuario> buscarUsuarioPorId(String id) {
@@ -397,6 +398,64 @@ public class Service {
 
     public List<PuestoCaracteristica> getCaracteristicasDePuesto(Integer idPuesto) {
         return puestoCaracteristicaRepository.findByIdPuesto_Id(idPuesto);
+    }
+
+    @Transactional
+    public void actualizarPerfilOferente(String id, String nombre, String telefono, String localizacion) {
+        Oferente o = oferenteRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Oferente no encontrado."));
+        if (nombre != null && !nombre.isBlank()) o.setNombre(nombre);
+        if (telefono != null) o.setTelefono(telefono);
+        if (localizacion != null) o.setResidencia(localizacion);
+        oferenteRepo.save(o);
+    }
+
+    @Transactional
+    public void reemplazarHabilidades(String idOferente, java.util.List<com.example.backend.dto.AgregarHabilidadRequest> habilidades) {
+        oferenteHabilidadRepository.deleteByIdOferente_Id(idOferente);
+        for (com.example.backend.dto.AgregarHabilidadRequest h : habilidades) {
+            agregarHabilidadOferente(idOferente, h.getIdCaracteristica(), h.getNivel());
+        }
+    }
+
+    public ResponseEntity<?> descargarCV(String idOferente, String uploadDir) throws java.io.IOException {
+        Oferente oferente = oferenteRepo.findById(idOferente)
+                .orElseThrow(() -> new IllegalArgumentException("Oferente no encontrado."));
+        if (oferente.getCvRuta() == null) throw new IllegalArgumentException("Sin CV.");
+        java.nio.file.Path archivo = java.nio.file.Paths.get(uploadDir).toAbsolutePath().normalize()
+                .resolve(oferente.getCvRuta());
+        org.springframework.core.io.Resource resource =
+                new org.springframework.core.io.UrlResource(archivo.toUri());
+        if (!resource.exists()) throw new IllegalArgumentException("Archivo no encontrado.");
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" + oferente.getCvRuta() + "\"")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(resource);
+    }
+
+    @Transactional
+    public void rechazarEmpresa(String id) {
+        empresaRepo.findById(id).ifPresent(e -> empresaRepo.delete(e));
+    }
+
+    @Transactional
+    public void rechazarOferente(String id) {
+        oferenteRepo.findById(id).ifPresent(o -> oferenteRepo.delete(o));
+    }
+
+    @Transactional
+    public void actualizarCaracteristica(Integer id, String nombre, Integer idPadre) {
+        Caracteristica c = caracteristicaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Característica no encontrada."));
+        if (nombre != null && !nombre.isBlank()) c.setNombre(nombre);
+        c.setIdPadre(idPadre != null ? caracteristicaRepository.findById(idPadre).orElse(null) : null);
+        caracteristicaRepository.save(c);
+    }
+
+    @Transactional
+    public void eliminarCaracteristica(Integer id) {
+        caracteristicaRepository.deleteById(id);
     }
 
     public List<ReportePuesto> getReportePorMes(int mes, int anio) {
