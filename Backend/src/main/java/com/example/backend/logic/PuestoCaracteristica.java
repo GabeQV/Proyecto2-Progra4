@@ -1,5 +1,6 @@
 package com.example.backend.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ public class PuestoCaracteristica {
     @EmbeddedId
     private PuestoCaracteristicaId id;
 
+    @JsonIgnore
     @MapsId("idPuesto")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_puesto", nullable = false)

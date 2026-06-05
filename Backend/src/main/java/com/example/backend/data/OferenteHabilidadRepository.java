@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface OferenteHabilidadRepository extends CrudRepository<OferenteHabilidad, OferenteHabilidadId> {
     List<OferenteHabilidad> findByIdOferente_Id(String idOferente);
+    void deleteByIdOferente_Id(String idOferente);
 }

@@ -1,5 +1,6 @@
 package com.example.backend.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,6 +39,7 @@ public class Caracteristica {
     @JoinColumn(name = "id_padre")
     private Caracteristica idPadre;
 
-    @OneToMany(mappedBy = "idPadre", fetch = FetchType.EAGER)
+    @JsonIgnore
+    @OneToMany(mappedBy = "idPadre", fetch = FetchType.LAZY)
     private List<Caracteristica> hijos = new ArrayList<>();
 }

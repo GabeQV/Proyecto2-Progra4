@@ -63,7 +63,11 @@ public class EmpresaApiController {
     @GetMapping("/puestos/{id}/candidatos")
     public ResponseEntity<?> buscarCandidatos(@PathVariable Integer id) {
         try {
-            return ResponseEntity.ok(service.buscarCandidatos(id));
+            return ResponseEntity.ok(
+                service.buscarCandidatos(id).stream()
+                    .map(r -> r.oferente)
+                    .toList()
+            );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Error al buscar candidatos"));
         }
@@ -81,6 +85,11 @@ public class EmpresaApiController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/oferentes/{id}/habilidades")
+    public ResponseEntity<?> getHabilidadesCandidato(@PathVariable String id) {
+        return ResponseEntity.ok(service.obtenerHabilidadesDeOferente(id));
     }
 
     @GetMapping("/caracteristicas")
