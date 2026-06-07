@@ -160,8 +160,16 @@ public class Service {
         }
     }
 
-    public List<OferenteHabilidad> obtenerHabilidadesDeOferente(String idOferente) {
-        return oferenteHabilidadRepository.findByIdOferente_Id(idOferente);
+    public List<java.util.Map<String, Object>> obtenerHabilidadesDeOferente(String idOferente) {
+        return oferenteHabilidadRepository.findByIdOferente_Id(idOferente).stream()
+                .map(h -> {
+                    Caracteristica c = h.getIdCaracteristica();
+                    java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+                    m.put("idCaracteristica", c.getId());
+                    m.put("nombre", c.getNombre());
+                    m.put("nivel", h.getNivel());
+                    return m;
+                }).toList();
     }
 
     @Transactional

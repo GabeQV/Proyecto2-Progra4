@@ -37,6 +37,7 @@ export default function Navbar({ onLoginClick }) {
             <Link to="/admin/empresas">Empresas</Link>
             <Link to="/admin/oferentes">Oferentes</Link>
             <Link to="/admin/caracteristicas">Características</Link>
+            <Link to="/admin/reporte">Reporte</Link>
           </>
         )}
         {auth && <button onClick={handleLogout}>Salir</button>}

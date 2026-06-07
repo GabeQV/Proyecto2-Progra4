@@ -4,8 +4,15 @@ import api from '../../api/client'
 
 const NIVELES = [1, 2, 3, 4, 5]
 
+// Extrae el id numérico de un campo idPadre que puede llegar como objeto {id,nombre} o como número directo
+const extractId = val => {
+  if (val == null) return null
+  if (typeof val === 'object') return val.id ?? null
+  return val
+}
+
 function CaracteristicaSelector({ nodos, seleccionados, onChange }) {
-  const raices = nodos.filter(n => !n.idPadre)
+  const raices = nodos.filter(n => extractId(n.idPadre) == null)
 
   const toggleNivel = (id, nivel) => {
     onChange(prev => {
@@ -15,12 +22,12 @@ function CaracteristicaSelector({ nodos, seleccionados, onChange }) {
           ? prev.filter(x => x.idCaracteristica !== id)
           : prev.map(x => x.idCaracteristica === id ? { ...x, nivel } : x)
       }
-      return [...prev, { idCaracteristica: id, nivel: nivel }]
+      return [...prev, { idCaracteristica: id, nivel }]
     })
   }
 
   const renderNodo = nodo => {
-    const hijos = nodos.filter(n => n.idPadre?.id === nodo.id)
+    const hijos = nodos.filter(n => extractId(n.idPadre) === nodo.id)
     const sel = seleccionados.find(x => x.idCaracteristica === nodo.id)
     return (
       <div key={nodo.id} className="tree-node">
@@ -47,7 +54,7 @@ function CaracteristicaSelector({ nodos, seleccionados, onChange }) {
 export default function PublicarPuesto() {
   const navigate = useNavigate()
   const [nodos, setNodos] = useState([])
-  const [form, setForm] = useState({ descripcion:'', tipoPuesto:'', salario:'', moneda:'CRC', esPublico: true })
+  const [form, setForm] = useState({ descripcion: '', tipoPuesto: '', salario: '', moneda: 'CRC', esPublico: true })
   const [caracteristicas, setCaracteristicas] = useState([])
   const [msg, setMsg] = useState(null)
 
@@ -83,8 +90,8 @@ export default function PublicarPuesto() {
               <label>Tipo de Puesto</label>
               <select value={form.tipoPuesto} onChange={set('tipoPuesto')} required>
                 <option value="">Seleccionar...</option>
-                {['TIEMPO_COMPLETO','MEDIO_TIEMPO','CONTRATO','REMOTO'].map(t =>
-                  <option key={t} value={t}>{t.replace('_',' ')}</option>)}
+                {['TIEMPO_COMPLETO', 'MEDIO_TIEMPO', 'CONTRATO', 'REMOTO'].map(t =>
+                  <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
               </select>
             </div>
             <div className="form-group">

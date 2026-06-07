@@ -22,6 +22,7 @@ import SubirCV from './pages/oferente/SubirCV'
 import AdminEmpresas from './pages/admin/AdminEmpresas'
 import AdminOferentes from './pages/admin/AdminOferentes'
 import AdminCaracteristicas from './pages/admin/AdminCaracteristicas'
+import AdminReporte from './pages/admin/AdminReporte'
 
 export default function App() {
   const [showLogin, setShowLogin] = useState(false)
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/admin/empresas" element={<PrivateRoute rol="ADMIN"><AdminEmpresas /></PrivateRoute>} />
           <Route path="/admin/oferentes" element={<PrivateRoute rol="ADMIN"><AdminOferentes /></PrivateRoute>} />
           <Route path="/admin/caracteristicas" element={<PrivateRoute rol="ADMIN"><AdminCaracteristicas /></PrivateRoute>} />
+          <Route path="/admin/reporte" element={<PrivateRoute rol="ADMIN"><AdminReporte /></PrivateRoute>} />
         </Routes>
         </div>
         <footer className="footer">

@@ -51,6 +51,7 @@ public class OferenteApiController {
     public ResponseEntity<?> getMisHabilidades(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(service.obtenerHabilidadesDeOferente(userDetails.getUsername()));
     }
+    // Devuelve DTOs limpios: [{idCaracteristica, nombre, nivel}] — sin entidades JPA crudas
 
     @PutMapping("/habilidades")
     public ResponseEntity<?> actualizarHabilidades(@RequestBody List<AgregarHabilidadRequest> habilidades,

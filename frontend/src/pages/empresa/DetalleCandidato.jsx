@@ -9,7 +9,11 @@ export default function DetalleCandidato() {
 
   useEffect(() => {
     api.get(`/empresa/oferentes/${idOferente}`).then(r => setOferente(r.data)).catch(() => {})
-    api.get(`/empresa/oferentes/${idOferente}/habilidades`).then(r => setHabilidades(r.data)).catch(() => {})
+
+    // El backend ahora devuelve DTOs limpios: [{idCaracteristica, nombre, nivel}]
+    api.get(`/empresa/oferentes/${idOferente}/habilidades`).then(r => {
+      setHabilidades(Array.isArray(r.data) ? r.data : [])
+    }).catch(() => {})
   }, [idOferente])
 
   if (!oferente) return <div className="container"><p>Cargando...</p></div>
@@ -30,10 +34,10 @@ export default function DetalleCandidato() {
           : <table>
               <thead><tr><th>Habilidad</th><th>Nivel</th></tr></thead>
               <tbody>
-                {habilidades.map(h => (
-                  <tr key={h.id?.idCaracteristica ?? Math.random()}>
-                    <td>{h.idCaracteristica?.nombre ?? '—'}</td>
-                    <td>{h.nivel}</td>
+                {habilidades.map((h, i) => (
+                  <tr key={i}>
+                    <td>{h.nombre}</td>
+                    <td>Nivel {h.nivel}</td>
                   </tr>
                 ))}
               </tbody>

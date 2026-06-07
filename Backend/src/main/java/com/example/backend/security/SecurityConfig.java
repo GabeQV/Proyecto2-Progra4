@@ -68,6 +68,7 @@ public class SecurityConfig {
                                 "/api/auth/registro/empresa",
                                 "/api/auth/registro/oferente").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/oferente/*/cv").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/empresa/**").hasRole("EMPRESA")
                         .requestMatchers("/api/oferente/**").hasRole("OFERENTE")
