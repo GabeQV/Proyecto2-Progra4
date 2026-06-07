@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/client'
+import { useAuth } from '../../context/AuthContext'
 import CaracteristicaTree from '../../components/CaracteristicaTree'
 
 export default function BuscarPuestos() {
+  const { auth } = useAuth()
   const [nodos, setNodos] = useState([])
   const [seleccionados, setSeleccionados] = useState([])
   const [resultados, setResultados] = useState([])
@@ -15,7 +17,8 @@ export default function BuscarPuestos() {
   const buscar = async () => {
     if (!seleccionados.length) return
     try {
-      const { data } = await api.get('/public/puestos/buscar', {
+      const endpoint = auth ? '/public/puestos/buscar-todos' : '/public/puestos/buscar'
+      const { data } = await api.get(endpoint, {
         params: { ids: seleccionados.join(',') }
       })
       setResultados(data)
@@ -41,7 +44,7 @@ export default function BuscarPuestos() {
               <div key={p.id} className="card">
                 <h3>{p.descripcion}</h3>
                 <p style={{ fontSize: '.85rem', color: '#555' }}>
-                  {p.moneda} {p.salario?.toLocaleString()} · {p.tipoPuesto}
+                  {p.moneda === 'USD' ? '$' : '₡'} {p.salario?.toLocaleString('es-CR')} · {p.tipoPuesto?.replace(/_/g, ' ')}
                 </p>
                 <p style={{ fontSize: '.8rem', color: '#888', marginTop: '.3rem' }}>{p.fechaRegistro}</p>
               </div>

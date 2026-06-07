@@ -14,6 +14,7 @@ public interface PuestoRepository extends CrudRepository<Puesto, Integer> {
     List<Puesto> findByIdEmpresa_Id(String idEmpresa);
 
     List<Puesto> findTop5ByActivoTrueAndEsPublicoTrueOrderByFechaRegistroDesc();
+    List<Puesto> findByActivoTrueOrderByFechaRegistroDesc();
 
     @Query("SELECT DISTINCT p FROM Puesto p " +
             "JOIN p.caracteristicas req_pc " +

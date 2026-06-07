@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/client'
+import { useAuth } from '../../context/AuthContext'
 
 function RequisitosArbol({ chars }) {
   const grupos = {}
@@ -52,8 +53,9 @@ function PuestoCard({ puesto }) {
         onMouseLeave={() => setHover(false)}
       >
         <p className="puesto-empresa">{puesto.idEmpresa?.nombre ?? ''}</p>
+        {!puesto.esPublico && <span style={{ display: 'inline-block', fontSize: '.72rem', fontWeight: 600, background: '#fef3c7', color: '#92400e', borderRadius: 10, padding: '1px 8px', marginBottom: '.25rem' }}>Privado</span>}
         <h3>{puesto.descripcion}</h3>
-        <p className="puesto-salario">₡ {puesto.salario?.toLocaleString()}</p>
+        <p className="puesto-salario">{puesto.moneda === 'USD' ? '$' : '₡'} {puesto.salario?.toLocaleString('es-CR')}</p>
         <button className="btn btn-primary" style={{ width: '100%', marginTop: '.75rem' }}
           onClick={() => { fetchChars(); setModal(true) }}>
           Ver detalle
@@ -62,7 +64,7 @@ function PuestoCard({ puesto }) {
         {hover && chars.length > 0 && (
           <div className="puesto-hover-tooltip">
             <strong>{puesto.descripcion}</strong>
-            <p style={{ margin: '.25rem 0', fontSize: '.85rem' }}>₡ {puesto.salario?.toLocaleString()}</p>
+            <p style={{ margin: '.25rem 0', fontSize: '.85rem' }}>{puesto.moneda === 'USD' ? '$' : '₡'} {puesto.salario?.toLocaleString('es-CR')}</p>
             <strong style={{ display: 'block', margin: '.5rem 0 .25rem' }}>Requisitos</strong>
             <RequisitosArbol chars={chars} />
           </div>
@@ -75,7 +77,7 @@ function PuestoCard({ puesto }) {
             <p className="puesto-empresa">{puesto.idEmpresa?.nombre ?? ''}</p>
             <h2 style={{ margin: '.25rem 0 .5rem' }}>{puesto.descripcion}</h2>
             <p className="puesto-salario" style={{ fontSize: '1.1rem', marginBottom: '.5rem' }}>
-              {puesto.moneda} {puesto.salario?.toLocaleString()}
+              {puesto.moneda === 'USD' ? '$' : '₡'} {puesto.salario?.toLocaleString('es-CR')}
             </p>
             <p style={{ fontSize: '.85rem', color: '#555', marginBottom: '.25rem' }}>
               <strong>Tipo:</strong> {puesto.tipoPuesto?.replace(/_/g, ' ')}
@@ -102,11 +104,13 @@ function PuestoCard({ puesto }) {
 }
 
 export default function Home() {
+  const { auth } = useAuth()
   const [puestos, setPuestos] = useState([])
 
   useEffect(() => {
-    api.get('/public/puestos/recientes').then(r => setPuestos(Array.isArray(r.data) ? r.data : [])).catch(() => {})
-  }, [])
+    const endpoint = auth ? '/public/puestos/todos' : '/public/puestos/recientes'
+    api.get(endpoint).then(r => setPuestos(Array.isArray(r.data) ? r.data : [])).catch(() => {})
+  }, [auth])
 
   return (
     <div className="container">

@@ -30,6 +30,19 @@ public class PublicApiController {
         return ResponseEntity.ok(service.buscarPuestosPublicos(lista));
     }
 
+    @GetMapping("/puestos/buscar-todos")
+    public ResponseEntity<?> buscarTodos(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal
+            org.springframework.security.core.userdetails.UserDetails user,
+            @RequestParam(required = false) String ids) {
+        if (user == null) return ResponseEntity.status(401).build();
+        if (ids == null || ids.isBlank()) return ResponseEntity.ok(List.of());
+        List<Integer> lista = java.util.Arrays.stream(ids.split(","))
+                .map(String::trim).filter(s -> !s.isEmpty())
+                .map(Integer::parseInt).toList();
+        return ResponseEntity.ok(service.BuscarPuestos(lista));
+    }
+
     @GetMapping("/puestos/{id}/caracteristicas")
     public ResponseEntity<?> caracteristicasDePuesto(@PathVariable Integer id) {
         return ResponseEntity.ok(service.getCaracteristicasDePuesto(id));

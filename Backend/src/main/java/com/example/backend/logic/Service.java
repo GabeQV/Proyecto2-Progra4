@@ -45,6 +45,18 @@ public class Service {
         return puestoRepository.findTop5ByActivoTrueAndEsPublicoTrueOrderByFechaRegistroDesc();
     }
 
+    public List<Puesto> getTodosPuestosActivos() {
+        return puestoRepository.findByActivoTrueOrderByFechaRegistroDesc();
+    }
+
+    public String getNombreUsuario(String id) {
+        return usuarioRepo.findById(id).map(u -> {
+            if (u.getEmpresa() != null) return u.getEmpresa().getNombre();
+            if (u.getOferente() != null) return u.getOferente().getNombre();
+            return id;
+        }).orElse(id);
+    }
+
     public Optional<Usuario> buscarUsuarioPorId(String id) {
         return usuarioRepo.findById(id);
     }

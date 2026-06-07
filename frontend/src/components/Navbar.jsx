@@ -40,6 +40,20 @@ export default function Navbar({ onLoginClick }) {
             <Link to="/admin/reporte">Reporte</Link>
           </>
         )}
+        {auth && (
+          <span style={{
+            background: auth.rol === 'ROLE_ADMIN' ? '#ffedd5' : auth.rol === 'ROLE_EMPRESA' ? '#dbeafe' : '#d1fae5',
+            color: auth.rol === 'ROLE_ADMIN' ? '#7c2d12' : auth.rol === 'ROLE_EMPRESA' ? '#1e40af' : '#065f46',
+            borderRadius: 20, padding: '3px 10px', fontSize: '.8rem', fontWeight: 600,
+            whiteSpace: 'nowrap', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis'
+          }}
+          >
+            {auth.nombre}
+            <span style={{ marginLeft: 4, background: 'rgba(0,0,0,.15)', borderRadius: 10, padding: '1px 6px', fontSize: '.7rem' }}>
+              {auth.rol === 'ROLE_ADMIN' ? 'Admin' : auth.rol === 'ROLE_EMPRESA' ? 'Empresa' : 'Oferente'}
+            </span>
+          </span>
+        )}
         {auth && <button onClick={handleLogout}>Salir</button>}
       </div>
     </nav>

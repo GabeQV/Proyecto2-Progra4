@@ -48,7 +48,8 @@ public class AuthController {
                 .findFirst()
                 .map(a -> a.getAuthority())
                 .orElse("");
-        return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken, rol, userDetails.getUsername()));
+        String nombre = service.getNombreUsuario(userDetails.getUsername());
+        return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken, rol, userDetails.getUsername(), nombre));
     }
 
     @PostMapping("/refresh")
